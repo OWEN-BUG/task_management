@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 @Data
-public class Comment {
+public class TaskComment {
     @TableId(type = IdType.AUTO)
     private Long id;
     private Long taskId;
