@@ -26,7 +26,6 @@ public class JwtConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                // 修改以下行：添加所有 Swagger 需要的路径
                 .antMatchers(
                         "/api/users/register",
                         "/api/users/login",
@@ -34,7 +33,11 @@ public class JwtConfig {
                         "/swagger-ui.html", // 添加主页面
                         "/v3/api-docs/**",  // 添加 OpenAPI 文档路径
                         "/swagger-resources/**", // 添加资源路径
-                        "/webjars/**"       // 添加 WebJars 资源
+                        "/webjars/**",       // 添加 WebJars 资源
+                        "/index.html",
+                        "/css/**",
+                        "/js/**",
+                        "/favicon.ico"
                 ).permitAll()
                 .anyRequest().authenticated()
                 .and()
