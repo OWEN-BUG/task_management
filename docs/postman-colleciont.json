@@ -1,0 +1,131 @@
+{
+  "info": {
+    "name": "Task Management API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{jwt}}", "type": "string" }]
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "jwt", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "1. 用户注册",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/users/register",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"alice\",\n  \"password\": \"123456\"\n}"
+        }
+      }
+    },
+    {
+      "name": "2. 用户登录",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const json = pm.response.json();",
+              "pm.collectionVariables.set('jwt', json);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/users/login",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"alice\",\n  \"password\": \"123456\"\n}"
+        }
+      }
+    },
+    {
+      "name": "3. 当前用户信息",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/users/me",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{jwt}}" }
+        ]
+      }
+    },
+    {
+      "name": "4. 创建任务",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/tasks",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{jwt}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"学习 Spring Boot\",\n  \"description\": \"完成 README 和测试\",\n  \"dueDate\": \"2025-08-15T00:00:00.000Z\",\n  \"priority\": 1,\n  \"status\": \"PENDING\"\n}"
+        }
+      }
+    },
+    {
+      "name": "5. 分页查询任务",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/tasks?page=1&size=5&status=PENDING",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{jwt}}" }
+        ]
+      }
+    },
+    {
+      "name": "6. 添加标签",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/tasks/1/tags",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{jwt}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"学习\"\n}"
+        }
+      }
+    },
+    {
+      "name": "7. 发表评论",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/tasks/1/comments",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{jwt}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"content\": \"加油！\"\n}"
+        }
+      }
+    },
+    {
+      "name": "8. 添加子任务",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/tasks/1/subtasks",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{jwt}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"编写 README\",\n  \"status\": \"PENDING\"\n}"
+        }
+      }
+    }
+  ]
+}
