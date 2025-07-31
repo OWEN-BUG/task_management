@@ -3,11 +3,13 @@ package com.why.taskmanager.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
+@TableName("sub_tasks")
 public class SubTask {
     @TableId(type = IdType.AUTO)
     private Long id;

@@ -1,6 +1,6 @@
 {
   "info": {
-    "name": "Task Management API",
+    "name": "Task Management API - Full",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "auth": {
@@ -31,8 +31,8 @@
           "listen": "test",
           "script": {
             "exec": [
-              "const json = pm.response.json();",
-              "pm.collectionVariables.set('jwt', json);"
+              "const jwt = pm.response.text();",
+              "pm.collectionVariables.set('jwt', jwt.trim());"
             ]
           }
         }
@@ -48,17 +48,38 @@
       }
     },
     {
-      "name": "3. 当前用户信息",
+      "name": "3. 获取当前用户信息",
       "request": {
         "method": "GET",
         "url": "{{baseUrl}}/api/users/me",
-        "header": [
-          { "key": "Authorization", "value": "Bearer {{jwt}}" }
-        ]
+        "header": [{ "key": "Authorization", "value": "Bearer {{jwt}}" }]
       }
     },
     {
-      "name": "4. 创建任务",
+      "name": "4. 修改密码",
+      "request": {
+        "method": "PUT",
+        "url": "{{baseUrl}}/api/users/password",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{jwt}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"oldPassword\": \"123456\",\n  \"newPassword\": \"654321\"\n}"
+        }
+      }
+    },
+    {
+      "name": "5. 删除用户",
+      "request": {
+        "method": "DELETE",
+        "url": "{{baseUrl}}/api/users/1",
+        "header": [{ "key": "Authorization", "value": "Bearer {{jwt}}" }]
+      }
+    },
+    {
+      "name": "6. 创建任务",
       "request": {
         "method": "POST",
         "url": "{{baseUrl}}/api/tasks",
@@ -73,17 +94,38 @@
       }
     },
     {
-      "name": "5. 分页查询任务",
+      "name": "7. 分页查询任务",
       "request": {
         "method": "GET",
         "url": "{{baseUrl}}/api/tasks?page=1&size=5&status=PENDING",
-        "header": [
-          { "key": "Authorization", "value": "Bearer {{jwt}}" }
-        ]
+        "header": [{ "key": "Authorization", "value": "Bearer {{jwt}}" }]
       }
     },
     {
-      "name": "6. 添加标签",
+      "name": "8. 更新任务",
+      "request": {
+        "method": "PUT",
+        "url": "{{baseUrl}}/api/tasks/1",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{jwt}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"学习 Spring Boot（已更新）\",\n  \"description\": \"完成 README 和测试 + 部署\",\n  \"dueDate\": \"2025-08-20T00:00:00.000Z\",\n  \"priority\": 2,\n  \"status\": \"IN_PROGRESS\"\n}"
+        }
+      }
+    },
+    {
+      "name": "9. 删除任务",
+      "request": {
+        "method": "DELETE",
+        "url": "{{baseUrl}}/api/tasks/1",
+        "header": [{ "key": "Authorization", "value": "Bearer {{jwt}}" }]
+      }
+    },
+    {
+      "name": "10. 添加任务标签",
       "request": {
         "method": "POST",
         "url": "{{baseUrl}}/api/tasks/1/tags",
@@ -98,7 +140,22 @@
       }
     },
     {
-      "name": "7. 发表评论",
+      "name": "11. 更新任务标签",
+      "request": {
+        "method": "PUT",
+        "url": "{{baseUrl}}/api/tasks/1/tags/1",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{jwt}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Spring全家桶\"\n}"
+        }
+      }
+    },
+    {
+      "name": "12. 添加任务评论",
       "request": {
         "method": "POST",
         "url": "{{baseUrl}}/api/tasks/1/comments",
@@ -113,7 +170,7 @@
       }
     },
     {
-      "name": "8. 添加子任务",
+      "name": "13. 添加子任务",
       "request": {
         "method": "POST",
         "url": "{{baseUrl}}/api/tasks/1/subtasks",
@@ -125,6 +182,29 @@
           "mode": "raw",
           "raw": "{\n  \"title\": \"编写 README\",\n  \"status\": \"PENDING\"\n}"
         }
+      }
+    },
+    {
+      "name": "14. 更新子任务",
+      "request": {
+        "method": "PUT",
+        "url": "{{baseUrl}}/api/tasks/1/subtasks/1",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{jwt}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"编写 README（已更新）\",\n  \"status\": \"COMPLETED\"\n}"
+        }
+      }
+    },
+    {
+      "name": "15. 删除子任务",
+      "request": {
+        "method": "DELETE",
+        "url": "{{baseUrl}}/api/tasks/1/subtasks/1",
+        "header": [{ "key": "Authorization", "value": "Bearer {{jwt}}" }]
       }
     }
   ]
