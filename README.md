@@ -130,3 +130,8 @@ CREATE TABLE `user_monthly_scores` (
   UNIQUE KEY `uk_user_year_month` (`user_id`,`year`,`month`),
   CONSTRAINT `user_monthly_scores_chk_1` CHECK ((`month` between 1 and 12))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+```
+## 三、接口说明 (Swagger 文档)
+```text
+http://localhost:8080/swagger-ui.html
+```
