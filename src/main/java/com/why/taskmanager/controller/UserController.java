@@ -47,7 +47,9 @@ public class UserController {
             user.setUpdatedTime(now);
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             user.setIsDeleted(false);
-            user.setRole(9); // 默认普通用户
+            // 如果前端没传，就用默认值 9；否则用前端传的值
+            user.setRole(user.getRole() == null ? 9 : user.getRole());
+
 
             Users newUser = new Users();
             newUser.setUsername(user.getUsername());
@@ -131,7 +133,7 @@ public class UserController {
             return ResponseEntity.badRequest().body("无效的角色值");
         }
 
-        Users user = userService.findByUsername(username);
+        Users user = userService.findById(id);
         user.setRole(role);
         userService.updateUser(user);
         return ResponseEntity.ok("用户角色更新成功");

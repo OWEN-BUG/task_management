@@ -1,4 +1,4 @@
-package com.why.taskmanager.congfig;
+package com.why.taskmanager.config;
 
 
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;

@@ -42,6 +42,8 @@ public class TaskController {
     @Autowired
     private UserTaskMapper userTaskMapper;
     @Autowired
+    private UserMonthlyScoreService scoreService;
+    @Autowired
     private JwtTokenProvider jwtUtil;
 
     @Operation(summary = "创建任务")
@@ -124,21 +126,22 @@ public class TaskController {
         return ResponseEntity.ok("任务删除成功");
     }
 
-    @Operation(summary = "获取月度用户分数")
     @GetMapping("/stats/monthly-scores")
     public ResponseEntity<List<UserScoreVO>> getMonthlyScores(
-            @RequestParam String month,
+            @RequestParam Integer year,
+            @RequestParam Integer month,
             @RequestHeader("Authorization") String token) {
 
         String username = getUsernameFromToken(token);
         Users currentUser = userService.findByUsername(username);
-
         if (currentUser.getRole() != 0) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
-        return ResponseEntity.ok(userTaskService.calculateMonthlyScores(month));
+        scoreService.calculateAndSaveMonthlyScore(year, month);
+        return ResponseEntity.ok(scoreService.getMonthlyScores(year, month));
     }
+
 
     // 评论相关接口
     @Operation(summary = "添加任务评论")

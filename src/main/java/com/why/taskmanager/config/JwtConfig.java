@@ -1,23 +1,25 @@
-package com.why.taskmanager.congfig;
+package com.why.taskmanager.config;
 
 import com.why.taskmanager.security.JwtAuthenticationFilter;
-import com.why.taskmanager.security.JwtTokenProvider;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
-
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class JwtConfig {
-    @Autowired
-    private JwtTokenProvider jwtUtil;
+
+    // ✅ 注入 Spring 管理的 Filter
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    public JwtConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -30,10 +32,10 @@ public class JwtConfig {
                         "/api/users/register",
                         "/api/users/login",
                         "/swagger-ui/**",
-                        "/swagger-ui.html", // 添加主页面
-                        "/v3/api-docs/**",  // 添加 OpenAPI 文档路径
-                        "/swagger-resources/**", // 添加资源路径
-                        "/webjars/**",       // 添加 WebJars 资源
+                        "/swagger-ui.html",
+                        "/v3/api-docs/**",
+                        "/swagger-resources/**",
+                        "/webjars/**",
                         "/index.html",
                         "/css/**",
                         "/js/**",
@@ -41,7 +43,9 @@ public class JwtConfig {
                 ).permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .addFilterBefore(new JwtAuthenticationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
+                // ✅ 使用 Spring 注入的 Filter
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 

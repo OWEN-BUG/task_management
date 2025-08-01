@@ -44,6 +44,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Users findById(Long id) {
+        return userMapper.selectById(id);
+    }
+
+    @Override
     public List<Users> findNormalUsers() {
         return userMapper.selectList(
                 new QueryWrapper<Users>()

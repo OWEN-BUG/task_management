@@ -2,6 +2,7 @@ package com.why.taskmanager.service.impl;
 
 import com.why.taskmanager.DTO.UserScoreVO;
 import com.why.taskmanager.entity.*;
+import com.why.taskmanager.exception.ResourceNotFoundException;
 import com.why.taskmanager.mapper.NotificationMapper;
 import com.why.taskmanager.mapper.TaskMapper;
 import com.why.taskmanager.mapper.UserMapper;
@@ -45,18 +46,31 @@ public class UserTaskServiceImpl implements UserTaskService {
     @Override
     @Transactional
     public void updateStatus(Long userTaskId, String status, String token) {
+        // 1. 先查出用户任务
         UserTask userTask = userTaskMapper.selectById(userTaskId);
+        if (userTask == null) {
+            throw new IllegalArgumentException("用户任务不存在");
+        }
+
+        // 2. 查出关联任务（含逻辑删除）
+        Task task = taskMapper.selectById(userTask.getTaskId());
+        if (task == null) {
+            throw new ResourceNotFoundException("任务不存在或已被删除");
+        }
+
+        // 3. 更新状态
         String oldStatus = userTask.getStatus();
         userTask.setStatus(status);
         userTask.setUpdatedTime(LocalDateTime.now());
 
-        // 状态变更为DONE时通知管理员
+        // 4. 首次标记为 DONE 时记录完成时间并通知管理员
         if ("DONE".equals(status) && !"DONE".equals(oldStatus)) {
             userTask.setCompletedTime(LocalDateTime.now());
 
-            // 创建通知
             Users user = userMapper.selectById(userTask.getUserId());
-            Task task = taskMapper.selectById(userTask.getTaskId());
+            if (user == null) {
+                throw new IllegalStateException("关联用户不存在");
+            }
 
             Notification notification = new Notification();
             notification.setTaskId(userTask.getTaskId());
@@ -67,8 +81,10 @@ public class UserTaskServiceImpl implements UserTaskService {
             notificationMapper.insert(notification);
         }
 
+        // 5. 持久化
         userTaskMapper.updateById(userTask);
     }
+
 
     @Override
     public void updateScore(Long userTaskId, Float score) {

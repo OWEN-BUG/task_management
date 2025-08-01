@@ -11,6 +11,6 @@ public interface UserService {
     void deleteUser(Long userId);
     void updateUser(Users user);
     List<Users> findAllUsers();
-
+    Users findById(Long id);
     List<Users> findNormalUsers();
 }

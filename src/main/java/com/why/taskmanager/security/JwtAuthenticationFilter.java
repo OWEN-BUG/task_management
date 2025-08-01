@@ -2,7 +2,6 @@ package com.why.taskmanager.security;
 
 import com.why.taskmanager.entity.Users;
 import com.why.taskmanager.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -17,23 +16,25 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-    @Autowired
-    private JwtTokenProvider jwtUtil;
-    @Autowired
-    private UserService userService;
 
-    public JwtAuthenticationFilter(JwtTokenProvider jwtUtil) {
+    private final JwtTokenProvider jwtUtil;
+    private final UserService userService;
+
+    // ✅ 构造函数一次性注入两个 Bean
+    public JwtAuthenticationFilter(JwtTokenProvider jwtUtil, UserService userService) {
         this.jwtUtil = jwtUtil;
+        this.userService = userService;
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
+
         String header = request.getHeader("Authorization");
         String username = null;
         String jwt = null;
@@ -44,18 +45,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            Users user = userService.findByUsername(username);
+            Users user = userService.findByUsername(username); // ✅ 这里不会再空指针
 
-            // 添加用户角色到权限
             List<GrantedAuthority> authorities = new ArrayList<>();
-            if (user.getRole() == 0) {
-                authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
-            } else {
-                authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-            }
+            authorities.add(
+                    user.getRole() == 0
+                            ? new SimpleGrantedAuthority("ROLE_ADMIN")
+                            : new SimpleGrantedAuthority("ROLE_USER")
+            );
 
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                    username, null, authorities);
+            UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken(username, null, authorities);
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
