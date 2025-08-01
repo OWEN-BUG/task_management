@@ -2,7 +2,7 @@
 
 ## 一、项目简介
 
-任务管理系统（Task Manager）是一个基于 Spring Boot + MyBatis-Plus + JWT 构建的 RESTful API 项目。提供任务管理、用户协作、进度跟踪等功能。系统采用JWT认证，支持多角色权限管理（管理员/普通用户），具有回收站、标签管理、子任务等特色功能。
+任务管理系统（Task Manager）是一个基于 Spring Boot + MyBatis-Plus + JWT 构建的 RESTful API 项目。提供任务管理、用户协作、进度跟踪等功能。系统采用JWT认证，支持多角色权限管理（管理员/普通用户），具有回收站、子任务等特色功能。
 
 ## 二、核心功能模块
 
