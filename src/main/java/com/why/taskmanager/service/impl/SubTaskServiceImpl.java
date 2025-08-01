@@ -1,11 +1,14 @@
 package com.why.taskmanager.service.impl;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.why.taskmanager.entity.SubTask;
 import com.why.taskmanager.mapper.SubTaskMapper;
 import com.why.taskmanager.service.SubTaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class SubTaskServiceImpl implements SubTaskService {
@@ -14,6 +17,7 @@ public class SubTaskServiceImpl implements SubTaskService {
 
     @Override
     public void addSubTask(SubTask subTask) {
+        subTask.setIsDeleted(false);
         subTaskMapper.insert(subTask);
     }
 
@@ -34,5 +38,11 @@ public class SubTaskServiceImpl implements SubTaskService {
             subTask.setStatus(status);
             subTaskMapper.updateById(subTask);
         }
+    }
+
+    public List<SubTask> getSubTasksByTaskId(Long taskId) {
+        return subTaskMapper.selectList(
+                new QueryWrapper<SubTask>().eq("task_id", taskId).eq("is_deleted", 0)
+        );
     }
 }

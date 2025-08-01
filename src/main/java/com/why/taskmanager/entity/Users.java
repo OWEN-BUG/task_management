@@ -14,6 +14,9 @@ public class Users {
     private String username;
     private String password;
 
+    // 角色：0-管理者，9-普通用户（默认）
+    private Integer role = 9;  // 设置默认角色为普通用户
+
     @TableLogic
     private Boolean isDeleted;
 

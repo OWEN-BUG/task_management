@@ -2,308 +2,657 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <title>任务管理系统</title>
+  <title>我的任务管理系统</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <!-- TailwindCSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Heroicons -->
   <script src="https://unpkg.com/heroicons@2.0.16/24/outline/index.js" type="module"></script>
   <style>
-    /* 毛玻璃卡片 */
-    .glass {
-      background: rgba(255, 255, 255, 0.25);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.18);
+    :root {
+      --mauve:#b8a9c9; --dusty-rose:#d4a5a5; --sage:#b6c4a2;
+      --stone:#c8c6c0; --slate-blue:#a7b0ca;
     }
-    /* 优先级颜色 */
-    .priority-1 { @apply bg-rose-500; }
-    .priority-2 { @apply bg-orange-500; }
-    .priority-3 { @apply bg-amber-500; }
-    .priority-4 { @apply bg-lime-500; }
-    .priority-5 { @apply bg-green-500; }
-    /* 状态徽章 */
-    .badge-pending { @apply bg-indigo-100 text-indigo-800; }
-    .badge-progress { @apply bg-sky-100 text-sky-800; }
-    .badge-completed { @apply bg-emerald-100 text-emerald-800; }
+    .glass{background:rgba(255,255,255,.45);backdrop-filter:blur(12px);}
+    .glass-btn{background:rgba(255,255,255,.3);backdrop-filter:blur(10px);}
+    .priority-1{background-color:var(--dusty-rose);}
+    .priority-2{background-color:#d6b894;}
+    .priority-3{background-color:var(--sage);}
+    .priority-4{background-color:var(--slate-blue);}
+    .priority-5{background-color:var(--stone);}
+    .badge-pending{background-color:#e0d3de;color:#7a6a7f;}
+    .badge-progress{background-color:#d0d8e8;color:#5b6b88;}
+    .badge-completed{background-color:#d1d6c8;color:#6a7560;}
+    .task-card{@apply transition-all duration-300 transform hover:-translate-y-1 cursor-pointer;}
+    .animate-fade-in {
+      animation: fadeIn 0.3s ease-in;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
   </style>
 </head>
 
-<body class="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-slate-100">
+<body class="min-h-screen bg-gradient-to-br from-[#e0e5eb] via-[#dde2e8] to-[#e8ebf0] text-gray-700">
 
 <!-- 登录 / 注册 -->
 <div id="authPanel" class="flex items-center justify-center h-screen">
-  <div class="glass rounded-2xl p-8 w-full max-w-sm space-y-6">
-    <h2 class="text-3xl font-bold text-center">任务管理系统</h2>
-    <input id="username" class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:ring-2 focus:ring-purple-500 outline-none" placeholder="用户名">
-    <input id="password" type="password" class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:ring-2 focus:ring-purple-500 outline-none" placeholder="密码">
-    <button onclick="register()" class="w-full py-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg font-semibold hover:scale-105 transition">注册</button>
-    <button onclick="login()" class="w-full py-2 bg-gradient-to-r from-indigo-500 to-blue-500 rounded-lg font-semibold hover:scale-105 transition">登录</button>
+  <div class="glass rounded-2xl p-8 w-full max-w-sm space-y-6 shadow-lg">
+    <div class="text-center">
+      <div class="bg-[#b8a9c9] w-16 h-16 rounded-full mx-auto flex items-center justify-center mb-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+        </svg>
+      </div>
+      <h2 class="text-4xl font-bold text-gray-700">welcome</h2>
+      <p class="text-gray-500 mt-1">非常简约 · 不失优雅 · 超级高效</p>
+    </div>
+
+    <div class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-600 mb-1">用户名</label>
+        <input id="username" class="w-full px-4 py-2 rounded-lg bg-white/50 border border-gray-300 focus:ring-2 focus:ring-[#a7b0ca] outline-none" placeholder="输入用户名">
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-600 mb-1">密码</label>
+        <input id="password" type="password" class="w-full px-4 py-2 rounded-lg bg-white/50 border border-gray-300 focus:ring-2 focus:ring-[#a7b0ca] outline-none" placeholder="输入密码">
+      </div>
+    </div>
+
+    <div class="space-y-3">
+      <button onclick="register()" class="w-full py-2.5 glass-btn rounded-lg font-semibold hover:bg-[#a798b9]/30 transition-all shadow-md text-[#7a6a7f]">注册</button>
+      <button onclick="login()" class="w-full py-2.5 glass-btn rounded-lg font-semibold hover:bg-[#96a0ba]/30 transition-all shadow-md text-[#5b6b88]">登录</button>
+    </div>
+
+    <p class="text-center text-sm text-gray-500">© 2025 任务管理系统</p>
   </div>
 </div>
 
 <!-- 主面板 -->
 <div id="mainPanel" class="hidden p-6 space-y-6">
   <header class="flex justify-between items-center">
-    <h1 class="text-3xl font-bold">欢迎 <span id="welcomeUser" class="text-purple-300"></span></h1>
-    <button onclick="logout()" class="px-4 py-2 bg-rose-600 rounded-lg hover:bg-rose-700 transition">退出</button>
+    <div>
+      <h1 class="text-3xl font-bold text-gray-700">欢迎 <span id="welcomeUser" class="text-[#7a6a7f]"></span></h1>
+      <p class="text-gray-500">今天又是高效的一天!!!</p>
+    </div>
+    <div class="flex space-x-2">
+      <button onclick="showUserProfile()" class="btn glass-btn text-[#5b6b88] hover:bg-[#d0d8e8]/30 shadow">个人资料</button>
+      <button onclick="showRecycleBin()" class="btn glass-btn text-[#7a6a7f] hover:bg-[#e0d3de]/30 shadow">回收站</button>
+      <button onclick="logout()" class="btn glass-btn text-[#7a6a7f] hover:bg-[#e0d3de]/30 shadow">退出</button>
+    </div>
   </header>
 
   <!-- 新建任务 -->
-  <div class="glass rounded-2xl p-6 space-y-4">
-    <h2 class="text-2xl font-bold">新建任务</h2>
-    <input id="title" class="w-full px-4 py-2 rounded-lg bg-slate-800 border border-slate-600 outline-none" placeholder="标题">
-    <textarea id="desc" class="w-full px-4 py-2 rounded-lg bg-slate-800 border border-slate-600 outline-none" placeholder="描述" rows="2"></textarea>
-    <input id="due" type="datetime-local" class="w-full px-4 py-2 rounded-lg bg-slate-800 border border-slate-600 outline-none">
-    <select id="priority" class="w-full px-4 py-2 rounded-lg bg-slate-800 border border-slate-600 outline-none">
-      <option value="1">1 - 最高</option>
-      <option value="2">2 - 高</option>
-      <option value="3">3 - 中</option>
-      <option value="4">4 - 低</option>
-      <option value="5">5 - 最低</option>
-    </select>
-    <select id="status" class="w-full px-4 py-2 rounded-lg bg-slate-800 border border-slate-600 outline-none">
-      <option value="PENDING">待办</option>
-      <option value="IN_PROGRESS">进行中</option>
-      <option value="COMPLETED">已完成</option>
-    </select>
-    <button onclick="createTask()" class="px-6 py-2 bg-gradient-to-r from-green-500 to-teal-500 rounded-lg font-semibold hover:scale-105 transition">保存任务</button>
+  <div class="glass rounded-2xl p-6 space-y-4 animate-fade-in">
+    <div class="flex items-center">
+      <div class="bg-[#a7b0ca] w-10 h-10 rounded-full flex items-center justify-center mr-3">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+        </svg>
+      </div>
+      <h2 class="text-2xl font-bold text-gray-700">新建任务</h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-600 mb-1">标题 *</label>
+        <input id="title" class="w-full px-4 py-2 rounded-lg bg-white/50 border border-gray-300 focus:ring-2 focus:ring-[#a7b0ca] outline-none" placeholder="任务标题">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-600 mb-1">开始时间</label>
+        <input id="startDate" type="datetime-local" class="w-full px-4 py-2 rounded-lg bg-white/50 border border-gray-300 focus:ring-2 focus:ring-[#a7b0ca] outline-none">
+      </div>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-600 mb-1">描述</label>
+      <textarea id="desc" class="w-full px-4 py-2 rounded-lg bg-white/50 border border-gray-300 focus:ring-2 focus:ring-[#a7b0ca] outline-none" placeholder="任务描述" rows="2"></textarea>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-600 mb-1">优先级</label>
+        <select id="priority" class="w-full px-4 py-2 rounded-lg bg-white/50 border border-gray-300 focus:ring-2 focus:ring-[#a7b0ca] outline-none">
+          <option value="1">1 - 最高</option>
+          <option value="2">2 - 高</option>
+          <option value="3" selected>3 - 中</option>
+          <option value="4">4 - 低</option>
+          <option value="5">5 - 最低</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-600 mb-1">状态</label>
+        <select id="status" class="w-full px-4 py-2 rounded-lg bg-white/50 border border-gray-300 focus:ring-2 focus:ring-[#a7b0ca] outline-none">
+          <option value="PENDING">待办</option>
+          <option value="IN_PROGRESS">进行中</option>
+          <option value="COMPLETED">已完成</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-600 mb-1">截止时间</label>
+        <input id="due" type="datetime-local" class="w-full px-4 py-2 rounded-lg bg-white/50 border border-gray-300 focus:ring-2 focus:ring-[#a7b0ca] outline-none">
+      </div>
+    </div>
+
+    <button onclick="createTask()" class="btn w-full glass-btn text-[#6a7560] hover:bg-[#b6c4a2]/30 shadow-md">保存任务</button>
   </div>
 
   <!-- 任务列表 -->
-  <div class="glass rounded-2xl p-6">
-    <div class="flex justify-between items-center mb-4">
-      <h2 class="text-2xl font-bold">任务列表</h2>
-      <button onclick="loadTasks()" class="px-4 py-2 bg-sky-600 rounded-lg hover:bg-sky-700 transition">刷新</button>
+  <div class="glass rounded-2xl p-6 animate-fade-in">
+    <div class="flex justify-between items-center mb-6">
+      <div class="flex items-center">
+        <div class="bg-[#b6c4a2] w-10 h-10 rounded-full flex items-center justify-center mr-3">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+        </div>
+        <h2 class="text-2xl font-bold text-gray-700">任务列表</h2>
+      </div>
+      <div class="flex gap-2">
+        <button onclick="loadTasks()" class="btn glass-btn text-[#5b6b88] hover:bg-[#d0d8e8]/30 shadow">刷新</button>
+        <button onclick="showRecycleBin()" class="btn glass-btn text-[#7a6a7f] hover:bg-[#e0d3de]/30 shadow">回收站</button>
+      </div>
     </div>
+
     <div id="taskList" class="grid gap-4 md:grid-cols-2 lg:grid-cols-3"></div>
   </div>
 
-  <!-- 任务详情抽屉 -->
-  <div id="detailPanel" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 hidden">
-    <div class="glass rounded-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-      <h3 class="text-2xl font-bold mb-4">任务详情</h3>
-      <ul id="detailList" class="space-y-2 mb-4"></ul>
-    </div>
-
-      <!-- 标签 -->
-      <div class="mb-4">
-        <h4 class="font-bold mb-2">标签</h4>
-        <div class="flex gap-2 mb-2">
-          <input id="tagName" class="flex-1 px-3 py-1 rounded bg-slate-800 border border-slate-600 outline-none" placeholder="标签名">
-          <button onclick="addTag()" class="px-3 py-1 bg-purple-600 rounded hover:bg-purple-700 transition">添加</button>
-        </div>
-        <ul id="tagList" class="flex flex-wrap gap-2"></ul>
+  <!-- 用户资料弹窗 -->
+  <div id="userProfilePanel" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 hidden">
+    <div class="glass rounded-2xl p-6 w-full max-w-md">
+      <div class="flex justify-between items-start mb-4">
+        <h3 class="text-2xl font-bold text-gray-700">个人资料</h3>
+        <button onclick="hideUserProfile()" class="text-gray-500 hover:text-gray-700">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
       </div>
 
-      <!-- 评论 -->
-      <div class="mb-4">
-        <h4 class="font-bold mb-2">评论</h4>
-        <div class="flex gap-2 mb-2">
-          <input id="commentText" class="flex-1 px-3 py-1 rounded bg-slate-800 border border-slate-600 outline-none" placeholder="说点什么...">
-          <button onclick="addComment()" class="px-3 py-1 bg-cyan-600 rounded hover:bg-cyan-700 transition">发表</button>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-600 mb-1">用户名</label>
+          <input id="profileUsername" class="w-full px-4 py-2 rounded-lg bg-white/50 border border-gray-300 focus:ring-2 focus:ring-[#a7b0ca] outline-none" readonly>
         </div>
-        <ul id="commentList" class="space-y-1 text-sm"></ul>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-600 mb-1">新密码</label>
+          <input id="newPassword" type="password" class="w-full px-4 py-2 rounded-lg bg-white/50 border border-gray-300 focus:ring-2 focus:ring-[#a7b0ca] outline-none" placeholder="输入新密码">
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-600 mb-1">确认密码</label>
+          <input id="confirmPassword" type="password" class="w-full px-4 py-2 rounded-lg bg-white/50 border border-gray-300 focus:ring-2 focus:ring-[#a7b0ca] outline-none" placeholder="再次输入新密码">
+        </div>
       </div>
 
-      <!-- 子任务 -->
-      <div>
-        <h4 class="font-bold mb-2">子任务</h4>
-        <div class="flex gap-2 mb-2">
-          <input id="subTitle" class="flex-1 px-3 py-1 rounded bg-slate-800 border border-slate-600 outline-none" placeholder="子任务标题">
-          <select id="subStatus" class="px-3 py-1 rounded bg-slate-800 border border-slate-600 outline-none">
-            <option value="PENDING">待办</option>
-            <option value="IN_PROGRESS">进行中</option>
-            <option value="COMPLETED">已完成</option>
-          </select>
-          <button onclick="addSubTask()" class="px-3 py-1 bg-indigo-600 rounded hover:bg-indigo-700 transition">添加</button>
-        </div>
-        <ul id="subTaskList" class="space-y-1 text-sm"></ul>
-      </div>
-
-      <button onclick="closeDetail()" class="mt-6 w-full py-2 bg-gray-600 rounded-lg hover:bg-gray-700 transition">关闭</button>
+      <button onclick="updateProfile()" class="mt-6 w-full py-2.5 glass-btn text-[#6a7560] hover:bg-[#b6c4a2]/30 rounded-lg shadow-md">更新资料</button>
     </div>
   </div>
 
-  <script>
-    /* ========= 全局 ========= */
-    const base = '/api';
-    let token = localStorage.getItem('token') || '';
-    let user = null;
-    let curTaskId = null;
+  <!-- 任务详情弹窗 -->
+  <div id="detailPanel" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 hidden">
+    <div class="glass rounded-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-start mb-4">
+        <h3 class="text-2xl font-bold text-gray-700">任务详情</h3>
+        <button onclick="closeDetail()" class="text-gray-500 hover:text-gray-700">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
 
-    const auth = () => ({ Authorization: `Bearer ${token}` });
-    const api = async (url, opts = {}) => {
-      const res = await fetch(url, { ...opts, headers: { ...auth(), 'Content-Type': 'application/json', ...opts.headers } });
-      if (!res.ok) throw await res.text();
-      const ct = res.headers.get('content-type');
-      return ct && ct.includes('json') ? res.json() : res.text();
-    };
+      <div id="taskDetails" class="space-y-4 mb-6 p-4 bg-white/30 rounded-lg"></div>
 
-    /* ========= 认证 ========= */
-    async function register() {
-      await api(`${base}/users/register`, { method: 'POST', body: JSON.stringify({ username: username.value, password: password.value }) });
-      alert('注册成功');
-    }
-    async function login() {
-      const jwt = await api(`${base}/users/login`, { method: 'POST', body: JSON.stringify({ username: username.value, password: password.value }) });
-      token = jwt; localStorage.setItem('token', token);
-      await initApp();
-    }
-    async function logout() {
-      token = ''; localStorage.removeItem('token'); location.reload();
-    }
-    async function currentUser() {
-      user = await api(`${base}/users/me`);
-      welcomeUser.textContent = user.username;
-    }
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <!-- 标签管理 -->
+        <div class="glass rounded-xl p-4">
+          <h4 class="font-bold text-gray-700 mb-2">标签</h4>
+          <div id="tagsList" class="mb-3 max-h-32 overflow-y-auto"></div>
+          <div class="flex">
+            <input id="newTag" class="flex-grow px-2 py-1 rounded-l bg-white/50 border border-gray-300 outline-none" placeholder="新标签">
+            <button onclick="addTag()" class="px-3 py-1 glass-btn text-[#6a7560] rounded-r">添加</button>
+          </div>
+        </div>
 
-    /* ========= 任务 ========= */
-    async function initApp() {
-      if (!token) return;
-      authPanel.classList.add('hidden');
-      mainPanel.classList.remove('hidden');
-      await currentUser();
-      loadTasks();
-    }
-    async function loadTasks(page = 1) {
+        <!-- 评论管理 -->
+        <div class="glass rounded-xl p-4">
+          <h4 class="font-bold text-gray-700 mb-2">评论</h4>
+          <div id="commentsList" class="mb-3 max-h-32 overflow-y-auto"></div>
+          <div class="flex">
+            <input id="newComment" class="flex-grow px-2 py-1 rounded-l bg-white/50 border border-gray-300 outline-none" placeholder="新评论">
+            <button onclick="addComment()" class="px-3 py-1 glass-btn text-[#6a7560] rounded-r">添加</button>
+          </div>
+        </div>
+
+        <!-- 子任务管理 -->
+        <div class="glass rounded-xl p-4">
+          <h4 class="font-bold text-gray-700 mb-2">子任务</h4>
+          <div id="subtasksList" class="mb-3 max-h-32 overflow-y-auto"></div>
+          <div class="flex">
+            <input id="newSubtask" class="flex-grow px-2 py-1 rounded-l bg-white/50 border border-gray-300 outline-none" placeholder="新子任务">
+            <button onclick="addSubtask()" class="px-3 py-1 glass-btn text-[#6a7560] rounded-r">添加</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <button onclick="updateTaskStatus('IN_PROGRESS')" class="py-2 glass-btn text-[#5b6b88] hover:bg-[#d0d8e8]/30 rounded-lg">标记为进行中</button>
+        <button onclick="updateTaskStatus('COMPLETED')" class="py-2 glass-btn text-[#6a7560] hover:bg-[#b6c4a2]/30 rounded-lg">标记为已完成</button>
+        <button onclick="deleteTask()" class="py-2 glass-btn text-[#7a6a7f] hover:bg-[#e0d3de]/30 rounded-lg">删除任务</button>
+        <button onclick="closeDetail()" class="py-2 glass-btn text-gray-700 hover:bg-[#c8c6c0]/30 rounded-lg">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 回收站弹窗 -->
+  <div id="recycleBinPanel" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 hidden">
+    <div class="glass rounded-2xl p-6 w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-start mb-4">
+        <h3 class="text-2xl font-bold text-gray-700">回收站</h3>
+        <button onclick="closeRecycleBin()" class="text-gray-500 hover:text-gray-700">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <div id="deletedTasksList" class="grid gap-4 md:grid-cols-2 lg:grid-cols-3"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* ========= 全局 ========= */
+  const base = '/api';
+  let token = localStorage.getItem('token') || '';
+  let user = null;
+  let curTaskId = null;
+
+  const auth = () => ({ Authorization: `Bearer ${token}` });
+  const api = async (url, opts = {}) => {
+    const res = await fetch(url, { ...opts, headers: { ...auth(), 'Content-Type': 'application/json', ...opts.headers } });
+    if (!res.ok) throw await res.text();
+    const ct = res.headers.get('content-type');
+    return ct && ct.includes('json') ? res.json() : res.text();
+  };
+
+  /* ========= 认证 ========= */
+  async function register() {
+    await api(`${base}/users/register`, { method: 'POST', body: JSON.stringify({ username: username.value, password: password.value }) });
+    alert('注册成功');
+  }
+  async function login() {
+    const jwt = await api(`${base}/users/login`, { method: 'POST', body: JSON.stringify({ username: username.value, password: password.value }) });
+    token = jwt; localStorage.setItem('token', token);
+    await initApp();
+  }
+  async function logout() {
+    token = ''; localStorage.removeItem('token'); location.reload();
+  }
+  async function currentUser() {
+    user = await api(`${base}/users/me`);
+    welcomeUser.textContent = user.username;
+    profileUsername.value = user.username;
+  }
+
+  /* ========= 用户资料 ========= */
+  function showUserProfile() { userProfilePanel.classList.remove('hidden'); }
+  function hideUserProfile() { userProfilePanel.classList.add('hidden'); newPassword.value=''; confirmPassword.value=''; }
+  async function updateProfile() {
+    if (newPassword.value !== confirmPassword.value) { alert('两次输入的密码不一致'); return; }
+    await api(`${base}/users/me`, { method: 'PUT', body: JSON.stringify({ password: newPassword.value }) });
+    alert('资料更新成功'); hideUserProfile();
+  }
+
+  /* ========= 任务 ========= */
+  async function initApp() {
+    if (!token) return;
+    authPanel.classList.add('hidden'); mainPanel.classList.remove('hidden');
+    await currentUser(); loadTasks();
+  }
+
+  async function loadTasks(page = 1) {
+    try {
       const data = await api(`${base}/tasks?page=${page}&size=100`);
       taskList.innerHTML = '';
       data.records.forEach(t => {
+        const statusClass = {
+          PENDING: 'badge-pending',
+          IN_PROGRESS: 'badge-progress',
+          COMPLETED: 'badge-completed'
+        }[t.status] || 'badge-pending';
         const div = document.createElement('div');
-        div.className = 'glass rounded-xl p-4 space-y-2';
+        div.className = 'task-card glass rounded-xl p-5 space-y-3 border-l-4';
+        div.style.borderLeftColor = getPriorityColor(t.priority);
         div.innerHTML = `
-      <h3 class="text-xl font-bold">${t.title}</h3>
-      <p class="text-sm">${t.description || '无描述'}</p>
-      <div class="flex justify-between items-center text-xs">
-        <span class="priority-${t.priority} px-2 py-1 rounded text-white">${priorityText(t.priority)}</span>
-        <span class="badge-${t.status.toLowerCase()} px-2 py-1 rounded">${statusText(t.status)}</span>
-      </div>
-      <div class="flex gap-2 mt-2">
-        <button onclick="openDetail(${t.id})" class="px-3 py-1 bg-sky-600 rounded text-sm">详情</button>
-        <button onclick="delTask(${t.id})" class="px-3 py-1 bg-rose-600 rounded text-sm">删除</button>
-      </div>
-    `;
+          <div class="flex justify-between">
+            <h3 class="text-lg font-semibold text-gray-700">${t.title}</h3>
+            <span class="priority-${t.priority} text-xs px-2 py-1 rounded text-white">${priorityText(t.priority)}</span>
+          </div>
+          <p class="text-sm text-gray-600">${t.description || '无描述'}</p>
+
+          <!-- 时间信息 -->
+          <div class="text-xs text-gray-500">
+            开始：${new Date(t.createdTime).toLocaleString()}<br>
+            截止：${t.dueDate ? new Date(t.dueDate).toLocaleString() : '未设置'}<br>
+            ${t.status === 'COMPLETED' && t.completedTime ? `完成：${new Date(t.completedTime).toLocaleString()}` : ''}
+          </div>
+
+          <div class="flex justify-between items-center text-xs mt-2">
+            <span class="${statusClass} px-2 py-1 rounded">${statusText(t.status)}</span>
+          </div>
+
+          <!-- 标签 -->
+          <div class="text-xs mt-2">
+            <div class="font-semibold text-gray-700">标签</div>
+            <div class="flex flex-wrap gap-1 mt-1">
+              ${(t.tags || []).map(tag => `<span class="bg-[#e0d3de] text-[#7a6a7f] px-2 py-0.5 rounded">${tag.name}</span>`).join('')}
+            </div>
+          </div>
+
+          <!-- 评论 -->
+          <div class="text-xs mt-2">
+            <div class="font-semibold text-gray-700">评论</div>
+            ${(t.comments || []).slice(0,3).map(c => `<div class="text-xs text-gray-600 mt-1">${c.content}</div>`).join('')}
+          </div>
+
+          <!-- 子任务 -->
+          <div class="text-xs mt-2">
+            <div class="font-semibold text-gray-700">子任务</div>
+            ${(t.subTasks || []).map(s => `<div class="text-xs text-gray-600 mt-1">${s.title} <span class="badge-${s.status.toLowerCase()} px-1 rounded">${statusText(s.status)}</span></div>`).join('')}
+          </div>
+
+          <div class="flex gap-2 mt-3">
+            <button onclick="openDetail(${t.id})" class="px-3 py-1.5 text-xs glass-btn text-[#5b6b88] hover:bg-[#d0d8e8]/30 rounded">详情</button>
+            <button onclick="deleteTask(${t.id})" class="px-3 py-1.5 text-xs glass-btn text-[#7a6a7f] hover:bg-[#e0d3de]/30 rounded">删除</button>
+          </div>
+        `;
         taskList.appendChild(div);
       });
+    } catch (error) {
+      console.error('加载任务失败:', error);
     }
-    async function createTask() {
-      await api(`${base}/tasks`, { method: 'POST', body: JSON.stringify({ title: title.value, description: desc.value, dueDate: due.value ? new Date(due.value).toISOString() : null, priority: +priority.value, status: status.value }) });
-      [title, desc, due, priority, status].forEach(i => i.value = '');
-      loadTasks();
-    }
-    async function delTask(id) {
-      if (!confirm('确定删除？')) return;
-      await api(`${base}/tasks/${id}`, { method: 'DELETE' });
-      loadTasks();
-    }
+  }
 
-    /* ========= 详情 ========= */
-    function openDetail(id) {
+  function getPriorityColor(p) {
+    const colors = { 1: '#d4a5a5', 2: '#d6b894', 3: '#b6c4a2', 4: '#a7b0ca', 5: '#c8c6c0' };
+    return colors[p] || '#c8c6c0';
+  }
+
+  async function createTask() {
+    if (!title.value.trim()) { alert('标题不能为空！'); return; }
+    try {
+      await api(`${base}/tasks`, {
+        method: 'POST',
+        body: JSON.stringify({
+          title: title.value,
+          description: desc.value,
+          dueDate: due.value ? new Date(due.value).toISOString() : null,
+          priority: +priority.value,
+          status: status.value
+        })
+      });
+      [title, desc, due, priority, status, startDate].forEach(i => i.value = '');
+      loadTasks();
+    } catch (error) {
+      console.error('创建任务失败:', error);
+    }
+  }
+
+  // async function deleteTask(id) {
+  //   if (!confirm('确定删除此任务？')) return;
+  //   try {
+  //     await api(`${base}/tasks/${id}`, { method: 'DELETE' });
+  //     loadTasks(); // 刷新任务列表
+  //   } catch (error) {
+  //     console.error('删除任务失败:', error);
+  //   }
+  // }
+
+  async function deleteTask(taskId) {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`/api/tasks/${taskId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        alert('任务删除成功');
+        loadTasks();
+      } else {
+        alert(`删除失败: ${result.message || '未知错误'}`);
+      }
+    } catch (error) {
+      console.error('删除任务失败:', error);
+      alert('删除任务时发生错误');
+    }
+  }
+
+  async function openDetail(id) {
+    try {
       curTaskId = id;
+      const task = await api(`${base}/tasks/${id}`);
+      const tags = await api(`${base}/tasks/${id}/tags`);
+      const comments = await api(`${base}/tasks/${id}/comments`);
+      const subTasks = await api(`${base}/tasks/${id}/subtasks`);
+
+      taskDetails.innerHTML = `
+        <div class="border-b pb-3 mb-3">
+          <h3 class="text-xl font-bold text-gray-700">${task.title}</h3>
+          <p class="text-gray-600 mt-1">${task.description || '无描述'}</p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <div class="text-sm text-gray-500">优先级</div>
+            <div class="text-gray-700 font-medium">${priorityText(task.priority)}</div>
+          </div>
+          <div>
+            <div class="text-sm text-gray-500">状态</div>
+            <div class="${task.status === 'PENDING' ? 'text-[#7a6a7f]' : task.status === 'IN_PROGRESS' ? 'text-[#5b6b88]' : 'text-[#6a7560]'} font-medium">${statusText(task.status)}</div>
+          </div>
+          <div>
+            <div class="text-sm text-gray-500">创建时间</div>
+            <div class="text-gray-700">${new Date(task.createdTime).toLocaleString()}</div>
+          </div>
+          <div>
+            <div class="text-sm text-gray-500">截止时间</div>
+            <div class="text-gray-700">${task.dueDate ? new Date(task.dueDate).toLocaleString() : '未设置'}</div>
+          </div>
+          ${task.status === 'COMPLETED' && task.completedTime ? `
+          <div>
+            <div class="text-sm text-gray-500">完成时间</div>
+            <div class="text-gray-700">${new Date(task.completedTime).toLocaleString()}</div>
+          </div>
+          ` : ''}
+        </div>
+      `;
+
+      // 渲染标签
+      tagsList.innerHTML = tags.length ? tags.map(tag => `
+        <div class="flex justify-between items-center py-1 border-b border-gray-100">
+          <span class="bg-[#e0d3de] text-[#7a6a7f] px-2 py-0.5 rounded">${tag.name}</span>
+          <button onclick="deleteTag(${tag.id})" class="text-red-500 hover:text-red-700">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      `).join('') : '<div class="text-gray-500 text-center py-2">暂无标签</div>';
+
+      // 渲染评论
+      commentsList.innerHTML = comments.length ? comments.map(comment => `
+        <div class="py-2 border-b border-gray-100">
+          <div class="text-gray-700">${comment.content}</div>
+          <div class="text-xs text-gray-500 mt-1">${new Date(comment.createdTime).toLocaleString()}</div>
+        </div>
+      `).join('') : '<div class="text-gray-500 text-center py-2">暂无评论</div>';
+
+      // 渲染子任务
+      subtasksList.innerHTML = subTasks.length ? subTasks.map(subtask => `
+        <div class="flex justify-between items-center py-1 border-b border-gray-100">
+          <div>
+            <div class="text-gray-700">${subtask.title}</div>
+            <div class="text-xs ${subtask.status === 'PENDING' ? 'text-[#7a6a7f]' : subtask.status === 'IN_PROGRESS' ? 'text-[#5b6b88]' : 'text-[#6a7560]'}">${statusText(subtask.status)}</div>
+          </div>
+          <button onclick="deleteSubtask(${subtask.id})" class="text-red-500 hover:text-red-700">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      `).join('') : '<div class="text-gray-500 text-center py-2">暂无子任务</div>';
+
       detailPanel.classList.remove('hidden');
-      loadDetail();
+    } catch (error) {
+      console.error('打开详情失败:', error);
     }
-    function closeDetail() {
-      detailPanel.classList.add('hidden');
-    }
-    async function loadDetail() {
-      const data = await api(`${base}/tasks?page=1&size=100`);
-      const t = data.records.find(r => r.id === curTaskId);
-      if (!t) return;
-      detailList.innerHTML = `
-    <li><strong>标题：</strong>${t.title}</li>
-    <li><strong>描述：</strong>${t.description || '无'}</li>
-    <li><strong>截止时间：</strong>${t.dueDate ? new Date(t.dueDate).toLocaleString() : '无'}</li>
-    <li><strong>优先级：</strong><span class="priority-${t.priority} px-2 py-1 rounded text-white">${priorityText(t.priority)}</span></li>
-    <li><strong>状态：</strong><span class="badge-${t.status.toLowerCase()} px-2 py-1 rounded">${statusText(t.status)}</span></li>
-    <li><strong>创建时间：</strong>${new Date(t.createdTime).toLocaleString()}</li>
-    <li><strong>更新时间：</strong>${new Date(t.updatedTime).toLocaleString()}</li>
-  `;
-      loadTags(); loadComments(); loadSubTasks();
-    }
+  }
 
-    /* ========= 标签 ========= */
-    async function loadTags() {
-      const data = await api(`${base}/tasks?page=1&size=100`);
-      const tags = data.records.find(r => r.id === curTaskId)?.tags || [];
-      tagList.innerHTML = tags.map(tag => `
-    <li class="inline-flex items-center bg-purple-600 text-white text-xs px-2 py-1 rounded-full">
-      ${tag.name}
-      <button onclick="updTag(${tag.id})" class="ml-1">✏️</button>
-      <button onclick="delTag(${tag.id})" class="ml-1">🗑️</button>
-    </li>`).join('');
-    }
-    async function addTag() {
-      await api(`${base}/tasks/${curTaskId}/tags`, { method: 'POST', body: JSON.stringify({ name: tagName.value }) });
-      tagName.value = '';
-      loadTags();
-    }
-    async function updTag(id) {
-      const name = prompt('新标签名');
-      if (!name) return;
-      await api(`${base}/tasks/${curTaskId}/tags/${id}`, { method: 'PUT', body: JSON.stringify({ name }) });
-      loadTags();
-    }
-    async function delTag(id) {
-      if (!confirm('删除标签？')) return;
-      await api(`${base}/tasks/${curTaskId}/tags/${id}`, { method: 'DELETE' });
-      loadTags();
-    }
+  function closeDetail() {
+    detailPanel.classList.add('hidden');
+    curTaskId = null;
+  }
 
-    /* ========= 评论 ========= */
-    async function loadComments() {
-      const data = await api(`${base}/tasks?page=1&size=100`);
-      const comments = data.records.find(r => r.id === curTaskId)?.comments || [];
-      commentList.innerHTML = comments.map(c => `<li>${c.content}</li>`).join('');
+  async function addTag() {
+    if (!newTag.value.trim()) return;
+    try {
+      await api(`${base}/tasks/${curTaskId}/tags`, {
+        method: 'POST',
+        body: JSON.stringify({ name: newTag.value.trim() })
+      });
+      newTag.value = '';
+      openDetail(curTaskId); // 刷新详情
+    } catch (error) {
+      console.error('添加标签失败:', error);
     }
-    async function addComment() {
-      await api(`${base}/tasks/${curTaskId}/comments`, { method: 'POST', body: JSON.stringify({ content: commentText.value }) });
-      commentText.value = '';
-      loadComments();
-    }
+  }
 
-    /* ========= 子任务 ========= */
-    async function loadSubTasks() {
-      const data = await api(`${base}/tasks?page=1&size=100`);
-      const subs = data.records.find(r => r.id === curTaskId)?.subTasks || [];
-      subTaskList.innerHTML = subs.map(s => `
-    <li class="flex items-center justify-between">
-      <span>${s.title} [${statusText(s.status)}]</span>
-      <div>
-        <button onclick="updSub(${s.id})" class="text-xs mr-1">✏️</button>
-        <button onclick="delSub(${s.id})" class="text-xs">🗑️</button>
-      </div>
-    </li>`).join('');
+  async function deleteTag(tagId) {
+    if (!confirm('确定删除此标签？')) return;
+    try {
+      await api(`${base}/tasks/${curTaskId}/tags/${tagId}`, { method: 'DELETE' });
+      openDetail(curTaskId); // 刷新详情
+    } catch (error) {
+      console.error('删除标签失败:', error);
     }
-    async function addSubTask() {
-      await api(`${base}/tasks/${curTaskId}/subtasks`, { method: 'POST', body: JSON.stringify({ title: subTitle.value, status: subStatus.value }) });
-      subTitle.value = '';
-      loadSubTasks();
-    }
-    async function updSub(id) {
-      const title = prompt('新标题') || '';
-      const st = prompt('新状态', subStatus.value) || 'PENDING';
-      await api(`${base}/tasks/${curTaskId}/subtasks/${id}`, { method: 'PUT', body: JSON.stringify({ title, status: st }) });
-      loadSubTasks();
-    }
-    async function delSub(id) {
-      if (!confirm('删除子任务？')) return;
-      await api(`${base}/tasks/${curTaskId}/subtasks/${id}`, { method: 'DELETE' });
-      loadSubTasks();
-    }
+  }
 
-    /* ========= 中文映射 ========= */
-    function priorityText(p) {
-      const map = { 1: '最高', 2: '高', 3: '中', 4: '低', 5: '最低' };
-      return map[p] || '未知';
+  async function addComment() {
+    if (!newComment.value.trim()) return;
+    try {
+      await api(`${base}/tasks/${curTaskId}/comments`, {
+        method: 'POST',
+        body: JSON.stringify({ content: newComment.value.trim() })
+      });
+      newComment.value = '';
+      openDetail(curTaskId); // 刷新详情
+    } catch (error) {
+      console.error('添加评论失败:', error);
     }
-    function statusText(s) {
-      const map = { PENDING: '待办', IN_PROGRESS: '进行中', COMPLETED: '已完成' };
-      return map[s] || '未知';
-    }
+  }
 
-    /* ========= 初始化 ========= */
-    if (token) initApp();
-  </script>
+  async function addSubtask() {
+    if (!newSubtask.value.trim()) return;
+    try {
+      await api(`${base}/tasks/${curTaskId}/subtasks`, {
+        method: 'POST',
+        body: JSON.stringify({ title: newSubtask.value.trim(), status: 'PENDING' })
+      });
+      newSubtask.value = '';
+      openDetail(curTaskId); // 刷新详情
+    } catch (error) {
+      console.error('添加子任务失败:', error);
+    }
+  }
+
+  async function deleteSubtask(subtaskId) {
+    if (!confirm('确定删除此子任务？')) return;
+    try {
+      await api(`${base}/tasks/${curTaskId}/subtasks/${subtaskId}`, { method: 'DELETE' });
+      openDetail(curTaskId); // 刷新详情
+    } catch (error) {
+      console.error('删除子任务失败:', error);
+    }
+  }
+
+  async function updateTaskStatus(status) {
+    try {
+      await api(`${base}/tasks/${curTaskId}`, {
+        method: 'PUT',
+        body: JSON.stringify({ status })
+      });
+      closeDetail();
+      loadTasks();
+    } catch (error) {
+      console.error('更新状态失败:', error);
+    }
+  }
+
+  /* ========= 回收站 ========= */
+  async function showRecycleBin() {
+    try {
+      const deletedTasks = await api(`${base}/tasks/deleted`);
+      deletedTasksList.innerHTML = '';
+
+      if (deletedTasks.length === 0) {
+        deletedTasksList.innerHTML = '<div class="text-center py-8 text-gray-500">回收站为空</div>';
+      } else {
+        deletedTasks.forEach(t => {
+          const div = document.createElement('div');
+          div.className = 'glass rounded-xl p-4 space-y-2';
+          div.innerHTML = `
+            <h4 class="font-semibold text-gray-700">${t.title}</h4>
+            <p class="text-sm text-gray-600 truncate">${t.description || '无描述'}</p>
+            <div class="text-xs text-gray-500">
+              删除时间：${new Date(t.updatedTime).toLocaleString()}
+            </div>
+            <div class="flex gap-2 mt-2">
+              <button onclick="restoreTask(${t.id})" class="px-3 py-1 text-xs glass-btn text-[#6a7560] hover:bg-[#b6c4a2]/30 rounded">恢复</button>
+            </div>
+          `;
+          deletedTasksList.appendChild(div);
+        });
+      }
+
+      recycleBinPanel.classList.remove('hidden');
+    } catch (error) {
+      console.error('加载回收站失败:', error);
+    }
+  }
+
+  function closeRecycleBin() {
+    recycleBinPanel.classList.add('hidden');
+  }
+
+  async function restoreTask(id) {
+    try {
+      await api(`${base}/tasks/${id}/restore`, { method: 'PUT' });
+      showRecycleBin(); // 刷新回收站
+      loadTasks();      // 刷新主任务列表
+    } catch (error) {
+      console.error('恢复任务失败:', error);
+    }
+  }
+
+  function priorityText(p) {
+    return { 1: '最高', 2: '高', 3: '中', 4: '低', 5: '最低' }[p] || '未知';
+  }
+  function statusText(s) {
+    return { PENDING: '待办', IN_PROGRESS: '进行中', COMPLETED: '已完成' }[s] || '未知';
+  }
+
+  if (token) initApp();
+</script>
 </body>
 </html>

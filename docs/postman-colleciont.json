@@ -1,211 +1,559 @@
 {
   "info": {
-    "name": "Task Management API - Full",
+    "_postman_id": "a1b2c3d4-e5f6-7890-1234-5678f9g0h1i2",
+    "name": "Task Manager API",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
-  "auth": {
-    "type": "bearer",
-    "bearer": [{ "key": "token", "value": "{{jwt}}", "type": "string" }]
-  },
-  "variable": [
-    { "key": "baseUrl", "value": "http://localhost:8080" },
-    { "key": "jwt", "value": "" }
-  ],
   "item": [
     {
-      "name": "1. 用户注册",
-      "request": {
-        "method": "POST",
-        "url": "{{baseUrl}}/api/users/register",
-        "header": [{ "key": "Content-Type", "value": "application/json" }],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"username\": \"alice\",\n  \"password\": \"123456\"\n}"
-        }
-      }
-    },
-    {
-      "name": "2. 用户登录",
-      "event": [
+      "name": "User Authentication",
+      "item": [
         {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "const jwt = pm.response.text();",
-              "pm.collectionVariables.set('jwt', jwt.trim());"
-            ]
-          }
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"testuser\",\n    \"password\": \"password123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/users/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "users", "register"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login User",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"testuser\",\n    \"password\": \"password123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/users/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "users", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/users/me",
+              "host": ["{{base_url}}"],
+              "path": ["api", "users", "me"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Password",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"password\": \"newpassword123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/users/me",
+              "host": ["{{base_url}}"],
+              "path": ["api", "users", "me"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/users/{{user_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "users", "{{user_id}}"]
+            }
+          },
+          "response": []
         }
-      ],
-      "request": {
-        "method": "POST",
-        "url": "{{baseUrl}}/api/users/login",
-        "header": [{ "key": "Content-Type", "value": "application/json" }],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"username\": \"alice\",\n  \"password\": \"123456\"\n}"
+      ]
+    },
+    {
+      "name": "Task Management",
+      "item": [
+        {
+          "name": "Create Task",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"Complete API Documentation\",\n    \"description\": \"Write comprehensive documentation for all endpoints\",\n    \"dueDate\": \"2023-12-31T00:00:00.000Z\",\n    \"priority\": 1,\n    \"status\": \"todo\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/tasks",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tasks"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Tasks",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/tasks?page=1&size=10&status=todo&keyword=API",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tasks"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                },
+                {
+                  "key": "status",
+                  "value": "todo"
+                },
+                {
+                  "key": "keyword",
+                  "value": "API"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Deleted Tasks",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/tasks/deleted?keyword=old",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tasks", "deleted"],
+              "query": [
+                {
+                  "key": "keyword",
+                  "value": "old"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Task",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"Updated Task Title\",\n    \"description\": \"Updated description\",\n    \"status\": \"in_progress\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/tasks/{{task_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tasks", "{{task_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Task",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/tasks/{{task_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tasks", "{{task_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Restore Task",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/tasks/{{task_id}}/restore",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tasks", "{{task_id}}", "restore"]
+            }
+          },
+          "response": []
         }
-      }
+      ]
     },
     {
-      "name": "3. 获取当前用户信息",
-      "request": {
-        "method": "GET",
-        "url": "{{baseUrl}}/api/users/me",
-        "header": [{ "key": "Authorization", "value": "Bearer {{jwt}}" }]
-      }
-    },
-    {
-      "name": "4. 修改密码",
-      "request": {
-        "method": "PUT",
-        "url": "{{baseUrl}}/api/users/password",
-        "header": [
-          { "key": "Content-Type", "value": "application/json" },
-          { "key": "Authorization", "value": "Bearer {{jwt}}" }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"oldPassword\": \"123456\",\n  \"newPassword\": \"654321\"\n}"
+      "name": "Task Tags",
+      "item": [
+        {
+          "name": "Add Tag to Task",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"urgent\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/tasks/{{task_id}}/tags",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tasks", "{{task_id}}", "tags"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Task Tags",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/tasks/{{task_id}}/tags",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tasks", "{{task_id}}", "tags"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Task Tag",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"high-priority\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/tasks/{{task_id}}/tags/{{tag_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tasks", "{{task_id}}", "tags", "{{tag_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Task Tag",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/tasks/{{task_id}}/tags/{{tag_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tasks", "{{task_id}}", "tags", "{{tag_id}}"]
+            }
+          },
+          "response": []
         }
-      }
+      ]
     },
     {
-      "name": "5. 删除用户",
-      "request": {
-        "method": "DELETE",
-        "url": "{{baseUrl}}/api/users/1",
-        "header": [{ "key": "Authorization", "value": "Bearer {{jwt}}" }]
-      }
-    },
-    {
-      "name": "6. 创建任务",
-      "request": {
-        "method": "POST",
-        "url": "{{baseUrl}}/api/tasks",
-        "header": [
-          { "key": "Content-Type", "value": "application/json" },
-          { "key": "Authorization", "value": "Bearer {{jwt}}" }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"title\": \"学习 Spring Boot\",\n  \"description\": \"完成 README 和测试\",\n  \"dueDate\": \"2025-08-15T00:00:00.000Z\",\n  \"priority\": 1,\n  \"status\": \"PENDING\"\n}"
+      "name": "Task Comments",
+      "item": [
+        {
+          "name": "Add Comment to Task",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"content\": \"This task needs more details\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/tasks/{{task_id}}/comments",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tasks", "{{task_id}}", "comments"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Task Comments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/tasks/{{task_id}}/comments",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tasks", "{{task_id}}", "comments"]
+            }
+          },
+          "response": []
         }
-      }
+      ]
     },
     {
-      "name": "7. 分页查询任务",
-      "request": {
-        "method": "GET",
-        "url": "{{baseUrl}}/api/tasks?page=1&size=5&status=PENDING",
-        "header": [{ "key": "Authorization", "value": "Bearer {{jwt}}" }]
-      }
-    },
-    {
-      "name": "8. 更新任务",
-      "request": {
-        "method": "PUT",
-        "url": "{{baseUrl}}/api/tasks/1",
-        "header": [
-          { "key": "Content-Type", "value": "application/json" },
-          { "key": "Authorization", "value": "Bearer {{jwt}}" }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"title\": \"学习 Spring Boot（已更新）\",\n  \"description\": \"完成 README 和测试 + 部署\",\n  \"dueDate\": \"2025-08-20T00:00:00.000Z\",\n  \"priority\": 2,\n  \"status\": \"IN_PROGRESS\"\n}"
+      "name": "SubTasks",
+      "item": [
+        {
+          "name": "Add SubTask",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"Research API documentation tools\",\n    \"status\": \"todo\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/tasks/{{task_id}}/subtasks",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tasks", "{{task_id}}", "subtasks"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get SubTasks",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/tasks/{{task_id}}/subtasks",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tasks", "{{task_id}}", "subtasks"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update SubTask",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"Updated subtask title\",\n    \"status\": \"completed\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/tasks/{{task_id}}/subtasks/{{subtask_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tasks", "{{task_id}}", "subtasks", "{{subtask_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete SubTask",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/tasks/{{task_id}}/subtasks/{{subtask_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tasks", "{{task_id}}", "subtasks", "{{subtask_id}}"]
+            }
+          },
+          "response": []
         }
-      }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080"
     },
     {
-      "name": "9. 删除任务",
-      "request": {
-        "method": "DELETE",
-        "url": "{{baseUrl}}/api/tasks/1",
-        "header": [{ "key": "Authorization", "value": "Bearer {{jwt}}" }]
-      }
+      "key": "auth_token",
+      "value": "",
+      "description": "To be set after login"
     },
     {
-      "name": "10. 添加任务标签",
-      "request": {
-        "method": "POST",
-        "url": "{{baseUrl}}/api/tasks/1/tags",
-        "header": [
-          { "key": "Content-Type", "value": "application/json" },
-          { "key": "Authorization", "value": "Bearer {{jwt}}" }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"name\": \"学习\"\n}"
-        }
-      }
+      "key": "task_id",
+      "value": "",
+      "description": "To be set after creating a task"
     },
     {
-      "name": "11. 更新任务标签",
-      "request": {
-        "method": "PUT",
-        "url": "{{baseUrl}}/api/tasks/1/tags/1",
-        "header": [
-          { "key": "Content-Type", "value": "application/json" },
-          { "key": "Authorization", "value": "Bearer {{jwt}}" }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"name\": \"Spring全家桶\"\n}"
-        }
-      }
+      "key": "tag_id",
+      "value": "",
+      "description": "To be set after adding a tag"
     },
     {
-      "name": "12. 添加任务评论",
-      "request": {
-        "method": "POST",
-        "url": "{{baseUrl}}/api/tasks/1/comments",
-        "header": [
-          { "key": "Content-Type", "value": "application/json" },
-          { "key": "Authorization", "value": "Bearer {{jwt}}" }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"content\": \"加油！\"\n}"
-        }
-      }
+      "key": "subtask_id",
+      "value": "",
+      "description": "To be set after adding a subtask"
     },
     {
-      "name": "13. 添加子任务",
-      "request": {
-        "method": "POST",
-        "url": "{{baseUrl}}/api/tasks/1/subtasks",
-        "header": [
-          { "key": "Content-Type", "value": "application/json" },
-          { "key": "Authorization", "value": "Bearer {{jwt}}" }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"title\": \"编写 README\",\n  \"status\": \"PENDING\"\n}"
-        }
-      }
-    },
-    {
-      "name": "14. 更新子任务",
-      "request": {
-        "method": "PUT",
-        "url": "{{baseUrl}}/api/tasks/1/subtasks/1",
-        "header": [
-          { "key": "Content-Type", "value": "application/json" },
-          { "key": "Authorization", "value": "Bearer {{jwt}}" }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"title\": \"编写 README（已更新）\",\n  \"status\": \"COMPLETED\"\n}"
-        }
-      }
-    },
-    {
-      "name": "15. 删除子任务",
-      "request": {
-        "method": "DELETE",
-        "url": "{{baseUrl}}/api/tasks/1/subtasks/1",
-        "header": [{ "key": "Authorization", "value": "Bearer {{jwt}}" }]
-      }
+      "key": "user_id",
+      "value": "",
+      "description": "To be set after getting current user"
     }
   ]
 }
