@@ -126,6 +126,7 @@ public class TaskController {
         return ResponseEntity.ok("任务删除成功");
     }
 
+    @Operation(summary = "获取员工月度得分")
     @GetMapping("/stats/monthly-scores")
     public ResponseEntity<List<UserScoreVO>> getMonthlyScores(
             @RequestParam Integer year,
