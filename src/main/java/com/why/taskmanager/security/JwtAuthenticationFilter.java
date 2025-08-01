@@ -24,7 +24,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtUtil;
     private final UserService userService;
 
-    // ✅ 构造函数一次性注入两个 Bean
     public JwtAuthenticationFilter(JwtTokenProvider jwtUtil, UserService userService) {
         this.jwtUtil = jwtUtil;
         this.userService = userService;
@@ -45,7 +44,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            Users user = userService.findByUsername(username); // ✅ 这里不会再空指针
+            Users user = userService.findByUsername(username);
 
             List<GrantedAuthority> authorities = new ArrayList<>();
             authorities.add(

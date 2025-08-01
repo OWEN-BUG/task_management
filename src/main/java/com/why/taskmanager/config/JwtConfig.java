@@ -14,7 +14,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class JwtConfig {
 
-    // ✅ 注入 Spring 管理的 Filter
+    // 注入 Spring 管理的 Filter
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     public JwtConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
@@ -43,7 +43,7 @@ public class JwtConfig {
                 ).permitAll()
                 .anyRequest().authenticated()
                 .and()
-                // ✅ 使用 Spring 注入的 Filter
+                // 使用 Spring 注入的 Filter
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

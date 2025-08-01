@@ -6,8 +6,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 public interface UserMonthlyScoreService {
-//    void calculateAndSaveMonthlyScore(String month);
-//    List<UserScoreVO> getMonthlyScores(String month);
 
     @Transactional
     void calculateAndSaveMonthlyScore(Integer year, Integer month);

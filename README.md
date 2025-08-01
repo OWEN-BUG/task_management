@@ -20,12 +20,15 @@
 - 安全认证：JWT (JSON Web Token)
 - 数据库 ORM：MyBatis-Plus
 - API 文档：Springdoc OpenAPI (Swagger UI)
+- 日志记录：SLF4J、Logback
 ### 2. 数据库初始化
 
 #### 创建数据库：
 ```sql
 CREATE DATABASE task_management_sys DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
-
+```
+#### 建表：
+```sql
 -- users 用户表
 CREATE TABLE `users` (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键, 账号',
